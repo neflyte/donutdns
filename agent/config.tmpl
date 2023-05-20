@@ -29,7 +29,7 @@
     {{end}}
     {{if .Forward.ServerName}}forward_server_name {{.Forward.ServerName}}{{end}}
   }
-  forward . {{range .Forward.Addresses}}{{.}} {{end}}{
+  forward . {{range .Forward.Addresses}}{{.}} {{end}}{{if .Forward.ServerName}}{
     tls_servername {{.Forward.ServerName}}
-  }
+  }{{end}}
 }

@@ -79,7 +79,7 @@ func New(logger output.Logger, cc *agent.CoreConfig) *Sets {
 // Size returns the number of items in the allow, block, suffix sets.
 func (s *Sets) Size() (int, int, int, int) {
 	allow := s.allow.Size()
-	allowsuffix := s.allow.Size()
+	allowsuffix := s.allowsuffix.Size()
 	block := s.block.Size()
 	suffix := s.suffix.Size()
 	return allow, allowsuffix, block, suffix

@@ -4,14 +4,18 @@
   donutdns {
     defaults {{not .NoDefaults}}
     {{if .AllowFile}}allow_file {{.AllowFile}}{{end}}
+    {{if .AllowSuffixFile}}allowsuffix_file {{.AllowSuffixFile}}{{end}}
     {{if .BlockFile}}block_file {{.BlockFile}}{{end}}
     {{if .SuffixFile}}suffix_file {{.SuffixFile}}{{end}}
 
     {{if .AllowDir}}allow_dir {{.AllowDir}}{{end}}
+    {{if .AllowSuffixDir}}allowsuffix_dir {{.AllowSuffixDir}}{{end}}
     {{if .BlockDir}}block_dir {{.BlockDir}}{{end}}
     {{if .SuffixDir}}suffix_dir {{.SuffixDir}}{{end}}
 
     {{range .Allows}}allow {{.}}
+    {{end}}
+    {{range .AllowSuffix}}allowsuffix {{.}}
     {{end}}
     {{range .Blocks}}block {{.}}
     {{end}}

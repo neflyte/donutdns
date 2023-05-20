@@ -73,6 +73,8 @@ func (cc *CheckCmd) execute(output *output.CLI, domain string) error {
 	switch {
 	case sets.Allow(domain):
 		output.Infof("domain %q on explicit allow list", domain)
+	case sets.AllowBySuffix(domain):
+		output.Infof("domain %q on suffix allow list", domain)
 	case sets.BlockByMatch(domain):
 		output.Infof("domain %q on explicit block list", domain)
 	case sets.BlockBySuffix(domain):

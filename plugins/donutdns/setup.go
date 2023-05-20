@@ -36,6 +36,12 @@ func Setup(c *caddy.Controller) error {
 				}
 				cc.AllowDir = c.Val()
 
+			case "allowsuffix_dir":
+				if !c.NextArg() {
+					return c.ArgErr()
+				}
+				cc.AllowSuffixDir = c.Val()
+
 			case "block_dir":
 				if !c.NextArg() {
 					return c.ArgErr()
@@ -54,6 +60,12 @@ func Setup(c *caddy.Controller) error {
 				}
 				cc.AllowFile = c.Val()
 
+			case "allowsuffix_file":
+				if !c.NextArg() {
+					return c.ArgErr()
+				}
+				cc.AllowSuffixFile = c.Val()
+
 			case "block_file":
 				if !c.NextArg() {
 					return c.ArgErr()
@@ -71,6 +83,12 @@ func Setup(c *caddy.Controller) error {
 					return c.ArgErr()
 				}
 				cc.Allows = append(cc.Allows, c.Val())
+
+			case "allowsuffix":
+				if !c.NextArg() {
+					return c.ArgErr()
+				}
+				cc.AllowSuffix = append(cc.AllowSuffix, c.Val())
 
 			case "block":
 				if !c.NextArg() {
@@ -106,8 +124,9 @@ func Setup(c *caddy.Controller) error {
 	}
 
 	sets := sources.New(pluginLogger, cc)
-	allow, block, suffix := sets.Size()
+	allow, allowsuffix, block, suffix := sets.Size()
 	pluginLogger.Infof("domains on explicit allow-list(s): %d", allow)
+	pluginLogger.Infof("domains on suffixes allow-list(s): %d", allowsuffix)
 	pluginLogger.Infof("domains on explicit block-list(s): %d", block)
 	pluginLogger.Infof("domains on suffixes block-list(s): %d", suffix)
 	pluginLogger.Infof("forward upstreams: %v", cc.Forward.Addresses)

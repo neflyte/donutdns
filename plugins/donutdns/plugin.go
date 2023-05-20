@@ -32,6 +32,11 @@ func (dd DonutDNS) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Ms
 		return plugin.NextOrFailure(dd.Name(), dd.Next, ctx, w, r)
 	}
 
+	if dd.sets.AllowBySuffix(cleanQuery) {
+		pluginLogger.Debugf("query for %s is allowed by suffix", cleanQuery)
+		return plugin.NextOrFailure(dd.Name(), dd.Next, ctx, w, r)
+	}
+
 	if dd.sets.BlockByMatch(cleanQuery) {
 		pluginLogger.Debugf("query for %s is blocked by match", cleanQuery)
 		return dd.null(state.QType(), origQuery, ctx, w, r)

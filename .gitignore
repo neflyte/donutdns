@@ -19,3 +19,5 @@ donutdns
 dist/
 go.work
 go.work.sum
+output/donutdns
+.idea/

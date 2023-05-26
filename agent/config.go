@@ -18,6 +18,7 @@ var tmpl embed.FS
 type Forward struct {
 	Addresses  []string
 	ServerName string
+	MaxFails   int
 }
 
 // CoreConfig contains donutdns configuration.
@@ -69,26 +70,28 @@ func ConfigFromEnv(e env.Environment) *CoreConfig {
 
 	cc := new(CoreConfig)
 	cc.Forward = new(Forward)
+	cc.Forward.MaxFails = 2 // The default value for `max_fails` in the forward plugin
 	if err := env.Parse(e, env.Schema{
-		"DONUT_DNS_PORT":             env.Int(&cc.Port, false),
-		"DONUT_DNS_NO_DEBUG":         env.Bool(&cc.NoDebug, false),
-		"DONUT_DNS_NO_LOG":           env.Bool(&cc.NoLog, false),
-		"DONUT_DNS_ALLOW":            env.String(&allow, false),
-		"DONUT_DNS_ALLOW_FILE":       env.String(&cc.AllowFile, false),
-		"DONUT_DNS_ALLOW_DIR":        env.String(&cc.AllowDir, false),
-		"DONUT_DNS_ALLOWSUFFIX":      env.String(&allowsuffix, false),
-		"DONUT_DNS_ALLOWSUFFIX_FILE": env.String(&cc.AllowSuffixFile, false),
-		"DONUT_DNS_ALLOWSUFFIX_DIR":  env.String(&cc.AllowSuffixDir, false),
-		"DONUT_DNS_BLOCK":            env.String(&block, false),
-		"DONUT_DNS_BLOCK_FILE":       env.String(&cc.BlockFile, false),
-		"DONUT_DNS_BLOCK_DIR":        env.String(&cc.BlockDir, false),
-		"DONUT_DNS_SUFFIX":           env.String(&suffix, false),
-		"DONUT_DNS_SUFFIX_FILE":      env.String(&cc.SuffixFile, false),
-		"DONUT_DNS_SUFFIX_DIR":       env.String(&cc.SuffixDir, false),
-		"DONUT_DNS_NO_DEFAULTS":      env.Bool(&cc.NoDefaults, false),
-		"DONUT_DNS_UPSTREAM_1":       env.String(&upstream1, false),
-		"DONUT_DNS_UPSTREAM_2":       env.String(&upstream2, false),
-		"DONUT_DNS_UPSTREAM_NAME":    env.String(&cc.Forward.ServerName, false),
+		"DONUT_DNS_PORT":               env.Int(&cc.Port, false),
+		"DONUT_DNS_NO_DEBUG":           env.Bool(&cc.NoDebug, false),
+		"DONUT_DNS_NO_LOG":             env.Bool(&cc.NoLog, false),
+		"DONUT_DNS_ALLOW":              env.String(&allow, false),
+		"DONUT_DNS_ALLOW_FILE":         env.String(&cc.AllowFile, false),
+		"DONUT_DNS_ALLOW_DIR":          env.String(&cc.AllowDir, false),
+		"DONUT_DNS_ALLOWSUFFIX":        env.String(&allowsuffix, false),
+		"DONUT_DNS_ALLOWSUFFIX_FILE":   env.String(&cc.AllowSuffixFile, false),
+		"DONUT_DNS_ALLOWSUFFIX_DIR":    env.String(&cc.AllowSuffixDir, false),
+		"DONUT_DNS_BLOCK":              env.String(&block, false),
+		"DONUT_DNS_BLOCK_FILE":         env.String(&cc.BlockFile, false),
+		"DONUT_DNS_BLOCK_DIR":          env.String(&cc.BlockDir, false),
+		"DONUT_DNS_SUFFIX":             env.String(&suffix, false),
+		"DONUT_DNS_SUFFIX_FILE":        env.String(&cc.SuffixFile, false),
+		"DONUT_DNS_SUFFIX_DIR":         env.String(&cc.SuffixDir, false),
+		"DONUT_DNS_NO_DEFAULTS":        env.Bool(&cc.NoDefaults, false),
+		"DONUT_DNS_UPSTREAM_1":         env.String(&upstream1, false),
+		"DONUT_DNS_UPSTREAM_2":         env.String(&upstream2, false),
+		"DONUT_DNS_UPSTREAM_NAME":      env.String(&cc.Forward.ServerName, false),
+		"DONUT_DNS_UPSTREAM_MAX_FAILS": env.Int(&cc.Forward.MaxFails, false),
 	}); err != nil {
 		panic(err)
 	}
@@ -131,6 +134,7 @@ func (cc *CoreConfig) Log(_ output.Info) {
 		log.Infof("DONUT_DNS_UPSTREAM_2: %s", cc.Forward.Addresses[1])
 	}
 	log.Infof("DONUT_DNS_UPSTREAM_NAME: %s", cc.Forward.ServerName)
+	log.Infof("DONUT_DNS_UPSTREAM_MAX_FAILS: %d", cc.Forward.MaxFails)
 }
 
 // ApplyDefaults sets reasonable default config values on a CoreConfig if no value is set.

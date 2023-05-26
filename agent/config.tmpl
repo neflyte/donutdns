@@ -21,15 +21,14 @@
     {{end}}
     {{range .Suffix}}suffix {{.}}
     {{end}}
+    upstream_1 {{index .Forward.Addresses 0}}
     {{if eq (len .Forward.Addresses) 2 }}
-    upstream_1 {{index .Forward.Addresses 0}}
     upstream_2 {{index .Forward.Addresses 1}}
-    {{else}}
-    upstream_1 {{index .Forward.Addresses 0}}
     {{end}}
     {{if .Forward.ServerName}}forward_server_name {{.Forward.ServerName}}{{end}}
   }
-  forward . {{range .Forward.Addresses}}{{.}} {{end}}{{if .Forward.ServerName}}{
-    tls_servername {{.Forward.ServerName}}
-  }{{end}}
+  forward . {{range .Forward.Addresses}}{{.}} {{end}}{
+    {{if .Forward.ServerName}}tls_servername {{.Forward.ServerName}}{{end}}
+    max_fails {{.Forward.MaxFails}}
+  }
 }

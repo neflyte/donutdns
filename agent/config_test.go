@@ -25,6 +25,7 @@ func TestCoreConfig_Generate(t *testing.T) {
 		Forward: &Forward{
 			Addresses:  []string{"1.1.1.1", "1.0.0.1"},
 			ServerName: "cloudflare-dns.com",
+			MaxFails:   2,
 		},
 	}
 
@@ -57,6 +58,7 @@ func TestCoreConfig_Generate(t *testing.T) {
   }
   forward . 1.1.1.1 1.0.0.1 {
     tls_servername cloudflare-dns.com
+    max_fails 2
   }
 }
 `), noWhitespace(result))
@@ -73,6 +75,7 @@ func TestCoreConfig_Generate_less(t *testing.T) {
 		Forward: &Forward{
 			Addresses:  []string{"8.8.8.8"},
 			ServerName: "google.dns",
+			MaxFails:   2,
 		},
 	}
 
@@ -88,6 +91,7 @@ func TestCoreConfig_Generate_less(t *testing.T) {
   }
   forward . 8.8.8.8 {
     tls_servername google.dns
+    max_fails 2
   }
 }
 `), noWhitespace(result))
@@ -100,27 +104,25 @@ func noWhitespace(s string) string {
 }
 
 func TestConfigFromEnv(t *testing.T) {
-	mEnv := env.NewEnvironmentMock(t)
-	defer mEnv.MinimockFinish()
+	t.Setenv("DONUT_DNS_PORT", "1234")
+	t.Setenv("DONUT_DNS_NO_DEBUG", "1")
+	t.Setenv("DONUT_DNS_NO_LOG", "1")
+	t.Setenv("DONUT_DNS_ALLOW", "example.com,pets.com")
+	t.Setenv("DONUT_DNS_ALLOW_FILE", "/etc/allow.list")
+	t.Setenv("DONUT_DNS_ALLOW_DIR", "/etc/allows")
+	t.Setenv("DONUT_DNS_BLOCK", "facebook.com,reddit.com")
+	t.Setenv("DONUT_DNS_BLOCK_FILE", "/etc/block.list")
+	t.Setenv("DONUT_DNS_BLOCK_DIR", "/etc/blocks")
+	t.Setenv("DONUT_DNS_SUFFIX", "fb.com,twitter.com")
+	t.Setenv("DONUT_DNS_SUFFIX_FILE", "/etc/suffix.list")
+	t.Setenv("DONUT_DNS_SUFFIX_DIR", "/etc/suffixes")
+	t.Setenv("DONUT_DNS_NO_DEFAULTS", "")
+	t.Setenv("DONUT_DNS_UPSTREAM_1", "8.8.8.8")
+	t.Setenv("DONUT_DNS_UPSTREAM_2", "8.8.4.4")
+	t.Setenv("DONUT_DNS_UPSTREAM_NAME", "dns.google")
+	t.Setenv("DONUT_DNS_UPSTREAM_MAX_FAILS", "5")
 
-	mEnv.GetenvMock.When("DONUT_DNS_PORT").Then("1234")
-	mEnv.GetenvMock.When("DONUT_DNS_NO_DEBUG").Then("1")
-	mEnv.GetenvMock.When("DONUT_DNS_NO_LOG").Then("1")
-	mEnv.GetenvMock.When("DONUT_DNS_ALLOW").Then("example.com,pets.com")
-	mEnv.GetenvMock.When("DONUT_DNS_ALLOW_FILE").Then("/etc/allow.list")
-	mEnv.GetenvMock.When("DONUT_DNS_ALLOW_DIR").Then("/etc/allows")
-	mEnv.GetenvMock.When("DONUT_DNS_BLOCK").Then("facebook.com,reddit.com")
-	mEnv.GetenvMock.When("DONUT_DNS_BLOCK_FILE").Then("/etc/block.list")
-	mEnv.GetenvMock.When("DONUT_DNS_BLOCK_DIR").Then("/etc/blocks")
-	mEnv.GetenvMock.When("DONUT_DNS_SUFFIX").Then("fb.com,twitter.com")
-	mEnv.GetenvMock.When("DONUT_DNS_SUFFIX_FILE").Then("/etc/suffix.list")
-	mEnv.GetenvMock.When("DONUT_DNS_SUFFIX_DIR").Then("/etc/suffixes")
-	mEnv.GetenvMock.When("DONUT_DNS_NO_DEFAULTS").Then("")
-	mEnv.GetenvMock.When("DONUT_DNS_UPSTREAM_1").Then("8.8.8.8")
-	mEnv.GetenvMock.When("DONUT_DNS_UPSTREAM_2").Then("8.8.4.4")
-	mEnv.GetenvMock.When("DONUT_DNS_UPSTREAM_NAME").Then("dns.google")
-
-	cc := ConfigFromEnv(mEnv)
+	cc := ConfigFromEnv(env.OS)
 	must.Eq(t, &CoreConfig{
 		Port:       1234,
 		NoDebug:    true,
@@ -138,32 +140,31 @@ func TestConfigFromEnv(t *testing.T) {
 		Forward: &Forward{
 			Addresses:  []string{"8.8.8.8", "8.8.4.4"},
 			ServerName: "dns.google",
+			MaxFails:   5,
 		},
 	}, cc)
 }
 
 func TestConfigFromEnv_2(t *testing.T) {
-	mEnv := env.NewEnvironmentMock(t)
-	defer mEnv.MinimockFinish()
+	t.Setenv("DONUT_DNS_PORT", "1234")
+	t.Setenv("DONUT_DNS_NO_DEBUG", "0")
+	t.Setenv("DONUT_DNS_NO_LOG", "true")
+	t.Setenv("DONUT_DNS_ALLOW", "")
+	t.Setenv("DONUT_DNS_ALLOW_FILE", "")
+	t.Setenv("DONUT_DNS_ALLOW_DIR", "")
+	t.Setenv("DONUT_DNS_BLOCK", "facebook.com")
+	t.Setenv("DONUT_DNS_BLOCK_FILE", "")
+	t.Setenv("DONUT_DNS_BLOCK_DIR", "")
+	t.Setenv("DONUT_DNS_SUFFIX", "")
+	t.Setenv("DONUT_DNS_SUFFIX_FILE", "")
+	t.Setenv("DONUT_DNS_SUFFIX_DIR", "")
+	t.Setenv("DONUT_DNS_NO_DEFAULTS", "true")
+	t.Setenv("DONUT_DNS_UPSTREAM_1", "8.8.8.8")
+	t.Setenv("DONUT_DNS_UPSTREAM_2", "")
+	t.Setenv("DONUT_DNS_UPSTREAM_NAME", "dns.google")
+	t.Setenv("DONUT_DNS_UPSTREAM_MAX_FAILS", "4")
 
-	mEnv.GetenvMock.When("DONUT_DNS_PORT").Then("1234")
-	mEnv.GetenvMock.When("DONUT_DNS_NO_DEBUG").Then("0")
-	mEnv.GetenvMock.When("DONUT_DNS_NO_LOG").Then("true")
-	mEnv.GetenvMock.When("DONUT_DNS_ALLOW").Then("")
-	mEnv.GetenvMock.When("DONUT_DNS_ALLOW_FILE").Then("")
-	mEnv.GetenvMock.When("DONUT_DNS_ALLOW_DIR").Then("")
-	mEnv.GetenvMock.When("DONUT_DNS_BLOCK").Then("facebook.com")
-	mEnv.GetenvMock.When("DONUT_DNS_BLOCK_FILE").Then("")
-	mEnv.GetenvMock.When("DONUT_DNS_BLOCK_DIR").Then("")
-	mEnv.GetenvMock.When("DONUT_DNS_SUFFIX").Then("")
-	mEnv.GetenvMock.When("DONUT_DNS_SUFFIX_FILE").Then("")
-	mEnv.GetenvMock.When("DONUT_DNS_SUFFIX_DIR").Then("")
-	mEnv.GetenvMock.When("DONUT_DNS_NO_DEFAULTS").Then("true")
-	mEnv.GetenvMock.When("DONUT_DNS_UPSTREAM_1").Then("8.8.8.8")
-	mEnv.GetenvMock.When("DONUT_DNS_UPSTREAM_2").Then("")
-	mEnv.GetenvMock.When("DONUT_DNS_UPSTREAM_NAME").Then("dns.google")
-
-	cc := ConfigFromEnv(mEnv)
+	cc := ConfigFromEnv(env.OS)
 	must.Eq(t, &CoreConfig{
 		Port:       1234,
 		NoDebug:    false,
@@ -175,6 +176,7 @@ func TestConfigFromEnv_2(t *testing.T) {
 		Forward: &Forward{
 			Addresses:  []string{"8.8.8.8"},
 			ServerName: "dns.google",
+			MaxFails:   4,
 		},
 	}, cc)
 }

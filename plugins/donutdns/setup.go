@@ -7,6 +7,7 @@ import (
 	"github.com/coredns/coredns/plugin/pkg/log"
 	"github.com/shoenig/donutdns/agent"
 	"github.com/shoenig/donutdns/sources"
+	"strconv"
 )
 
 var pluginLogger = log.NewWithPlugin(PluginName)
@@ -119,6 +120,12 @@ func Setup(c *caddy.Controller) error {
 					return c.ArgErr()
 				}
 				cc.Forward.ServerName = c.Val()
+
+			case "forward_max_fails":
+				if !c.NextArg() {
+					return c.ArgErr()
+				}
+				cc.Forward.MaxFails, _ = strconv.Atoi(c.Val())
 			}
 		}
 	}

@@ -10,5 +10,5 @@ export DONUT_DNS_ALLOW_FILE="hack/allow_file.txt"
 export DONUT_DNS_ALLOWSUFFIX_FILE="hack/allowsuffix_file.txt"
 export DONUT_DNS_BLOCK_FILE="hack/block_file.txt"
 export DONUT_DNS_UPSTREAM_1="192.168.1.1"
-export DONUT_DNS_UPSTREAM_MAX_FAILS="0"
-output/donutdns
+export DONUT_DNS_UPSTREAM_MAX_FAILS="1"
+./donutdns

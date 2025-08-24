@@ -7,7 +7,7 @@ import (
 	"text/template"
 
 	"github.com/coredns/coredns/plugin/pkg/log"
-	"github.com/shoenig/donutdns/output"
+	"github.com/neflyte/donutdns/output"
 	"github.com/shoenig/extractors/env"
 )
 

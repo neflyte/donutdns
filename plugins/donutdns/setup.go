@@ -5,8 +5,8 @@ import (
 	"github.com/coredns/coredns/core/dnsserver"
 	"github.com/coredns/coredns/plugin"
 	"github.com/coredns/coredns/plugin/pkg/log"
-	"github.com/shoenig/donutdns/agent"
-	"github.com/shoenig/donutdns/sources"
+	"github.com/neflyte/donutdns/agent"
+	"github.com/neflyte/donutdns/sources"
 	"strconv"
 )
 

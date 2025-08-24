@@ -6,9 +6,9 @@ import (
 	"runtime"
 
 	"github.com/hashicorp/go-set"
-	"github.com/shoenig/donutdns/agent"
-	"github.com/shoenig/donutdns/output"
-	"github.com/shoenig/donutdns/sources/extract"
+	"github.com/neflyte/donutdns/agent"
+	"github.com/neflyte/donutdns/output"
+	"github.com/neflyte/donutdns/sources/extract"
 	"github.com/shoenig/ignore"
 )
 

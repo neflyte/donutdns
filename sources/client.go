@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-cleanhttp"
-	"github.com/shoenig/donutdns/agent"
+	"github.com/neflyte/donutdns/agent"
 )
 
 // client creates an http.Client with an explicit DNS server. This is necessary

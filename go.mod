@@ -1,4 +1,4 @@
-module github.com/shoenig/donutdns
+module github.com/neflyte/donutdns
 
 go 1.23.0
 

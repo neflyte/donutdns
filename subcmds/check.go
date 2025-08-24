@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"github.com/google/subcommands"
-	"github.com/shoenig/donutdns/agent"
-	"github.com/shoenig/donutdns/output"
-	"github.com/shoenig/donutdns/sources"
+	"github.com/neflyte/donutdns/agent"
+	"github.com/neflyte/donutdns/output"
+	"github.com/neflyte/donutdns/sources"
 	"github.com/shoenig/extractors/env"
 )
 

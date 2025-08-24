@@ -16,9 +16,9 @@ import (
 	_ "github.com/coredns/coredns/plugin/log"
 	"github.com/coredns/coredns/plugin/pkg/log"
 	"github.com/google/subcommands"
-	"github.com/shoenig/donutdns/agent"
-	"github.com/shoenig/donutdns/plugins/donutdns"
-	"github.com/shoenig/donutdns/subcmds"
+	"github.com/neflyte/donutdns/agent"
+	"github.com/neflyte/donutdns/plugins/donutdns"
+	"github.com/neflyte/donutdns/subcmds"
 	"github.com/shoenig/extractors/env"
 )
 

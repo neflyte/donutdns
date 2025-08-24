@@ -4,28 +4,31 @@
   donutdns {
     defaults {{not .NoDefaults}}
     {{if .AllowFile}}allow_file {{.AllowFile}}{{end}}
+    {{if .AllowSuffixFile}}allowsuffix_file {{.AllowSuffixFile}}{{end}}
     {{if .BlockFile}}block_file {{.BlockFile}}{{end}}
     {{if .SuffixFile}}suffix_file {{.SuffixFile}}{{end}}
 
     {{if .AllowDir}}allow_dir {{.AllowDir}}{{end}}
+    {{if .AllowSuffixDir}}allowsuffix_dir {{.AllowSuffixDir}}{{end}}
     {{if .BlockDir}}block_dir {{.BlockDir}}{{end}}
     {{if .SuffixDir}}suffix_dir {{.SuffixDir}}{{end}}
 
     {{range .Allows}}allow {{.}}
     {{end}}
+    {{range .AllowSuffix}}allowsuffix {{.}}
+    {{end}}
     {{range .Blocks}}block {{.}}
     {{end}}
     {{range .Suffix}}suffix {{.}}
     {{end}}
+    upstream_1 {{index .Forward.Addresses 0}}
     {{if eq (len .Forward.Addresses) 2 }}
-    upstream_1 {{index .Forward.Addresses 0}}
     upstream_2 {{index .Forward.Addresses 1}}
-    {{else}}
-    upstream_1 {{index .Forward.Addresses 0}}
     {{end}}
     {{if .Forward.ServerName}}forward_server_name {{.Forward.ServerName}}{{end}}
   }
   forward . {{range .Forward.Addresses}}{{.}} {{end}}{
-    tls_servername {{.Forward.ServerName}}
+    {{if .Forward.ServerName}}tls_servername {{.Forward.ServerName}}{{end}}
+    max_fails {{.Forward.MaxFails}}
   }
 }

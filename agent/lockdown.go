@@ -22,9 +22,11 @@ func readable(cc *CoreConfig) []*landlock.Path {
 		}
 	}
 	add(cc.AllowFile, landlock.File)
+	add(cc.AllowSuffixFile, landlock.File)
 	add(cc.BlockFile, landlock.File)
 	add(cc.SuffixFile, landlock.File)
 	add(cc.AllowDir, landlock.Dir)
+	add(cc.AllowSuffixDir, landlock.Dir)
 	add(cc.BlockDir, landlock.Dir)
 	add(cc.SuffixDir, landlock.Dir)
 	return paths

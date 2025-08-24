@@ -1,0 +1,51 @@
+#!/bin/sh
+
+# PROVIDE: donutdns
+# REQUIRE: DAEMON NETWORKING
+# KEYWORD: shutdown
+
+#
+# Add the following lines to /etc/rc.conf.local, /etc/rc.conf or
+# /etc/rc.conf.d/donutdns to enable this service:
+#
+# donutdns_enable (bool):            Set to NO by default.
+#                                    Set it to "YES" to enable donutdns.
+# donutdns_port (str):               Set to "53" by default.
+#                                    Port to bind to.
+# donutdns_no_log (str):	           Set to "false" to enable logging (default).
+#				                             Set to "true" to disable logging.
+# donutdns_no_debug (str):	         Set to "false" to enable debug logging.
+#				                             Set to "true" to disable debug logging (default).
+# donutdns_forward_max_fails (str):  Set to "2" by default.
+#                                    The number of upstream health check failures before upstream is declared unhealthy.
+#
+
+. /etc/rc.subr
+
+name=donutdns
+rcvar=donutdns_enable
+
+load_rc_config $name
+
+: ${donutdns_enable:="NO"}
+: ${donutdns_port:="53"}
+: ${donutdns_no_log:="false"}
+: ${donutdns_no_debug:="true"}
+: ${donutdns_forward_max_fails:="2"}
+
+pidfile="/var/run/${name}.pid"
+procname="/usr/local/bin/${name}"
+command="/usr/sbin/daemon"
+command_args="-S -m 3 -s info -l daemon -p ${pidfile} /usr/bin/env ${procname}"
+
+export DONUT_DNS_NO_DEFAULTS="true"
+export DONUT_DNS_NO_LOG="${donutdns_no_log}"
+export DONUT_DNS_NO_DEBUG="${donutdns_no_debug}"
+export DONUT_DNS_PORT="${donutdns_port}"
+export DONUT_DNS_FORWARD_MAX_FAILS="${donutdns_forward_max_fails}"
+export DONUT_DNS_ALLOW_DIR="/usr/local/etc/${name}/allow.d"
+export DONUT_DNS_ALLOWSUFFIX_FILE="/usr/local/etc/${name}/allowsuffix.txt"
+export DONUT_DNS_BLOCK_FILE="/usr/local/etc/${name}/block_file.txt"
+export DONUT_DNS_UPSTREAM_1="1.1.1.1"
+
+run_rc_command "$1"

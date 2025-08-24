@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"github.com/google/subcommands"
-	"github.com/shoenig/donutdns/agent"
-	"github.com/shoenig/donutdns/output"
-	"github.com/shoenig/donutdns/sources"
+	"github.com/neflyte/donutdns/agent"
+	"github.com/neflyte/donutdns/output"
+	"github.com/neflyte/donutdns/sources"
 	"github.com/shoenig/extractors/env"
 )
 
@@ -73,6 +73,8 @@ func (cc *CheckCmd) execute(output *output.CLI, domain string) error {
 	switch {
 	case sets.Allow(domain):
 		output.Infof("domain %q on explicit allow list", domain)
+	case sets.AllowBySuffix(domain):
+		output.Infof("domain %q on suffix allow list", domain)
 	case sets.BlockByMatch(domain):
 		output.Infof("domain %q on explicit block list", domain)
 	case sets.BlockBySuffix(domain):

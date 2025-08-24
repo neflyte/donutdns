@@ -6,22 +6,24 @@ import (
 	"strings"
 
 	"github.com/hashicorp/go-set"
-	"github.com/shoenig/donutdns/agent"
-	"github.com/shoenig/donutdns/output"
-	"github.com/shoenig/donutdns/sources/extract"
+	"github.com/neflyte/donutdns/agent"
+	"github.com/neflyte/donutdns/output"
+	"github.com/neflyte/donutdns/sources/extract"
 	"github.com/shoenig/ignore"
 )
 
 // Sets enables efficient look-ups of whether a domain should be allowable or blocked.
 type Sets struct {
-	allow  *set.Set[string]
-	block  *set.Set[string]
-	suffix *set.Set[string]
+	allow       *set.Set[string]
+	allowsuffix *set.Set[string]
+	block       *set.Set[string]
+	suffix      *set.Set[string]
 }
 
 // New returns a Sets pre-filled according to cc.
 func New(logger output.Logger, cc *agent.CoreConfig) *Sets {
 	allow := set.New[string](100)
+	allowsuffix := set.New[string](100)
 	block := set.New[string](100)
 	suffix := set.New[string](100)
 
@@ -38,6 +40,15 @@ func New(logger output.Logger, cc *agent.CoreConfig) *Sets {
 
 	// insert each file of custom allowable domains
 	customDir(cc.AllowDir, allow)
+
+	// insert individual allowable domain suffixes
+	allowsuffix.InsertSlice(cc.AllowSuffix)
+
+	// insert file of custom allowable domain suffixes
+	customFile(cc.AllowSuffixFile, allowsuffix)
+
+	// insert each file of allowable custom domain suffixes
+	customDir(cc.AllowSuffixDir, allowsuffix)
 
 	// insert individual custom block domains
 	block.InsertSlice(cc.Blocks)
@@ -58,23 +69,47 @@ func New(logger output.Logger, cc *agent.CoreConfig) *Sets {
 	customDir(cc.SuffixDir, suffix)
 
 	return &Sets{
-		allow:  allow,
-		block:  block,
-		suffix: suffix,
+		allow:       allow,
+		allowsuffix: allowsuffix,
+		block:       block,
+		suffix:      suffix,
 	}
 }
 
 // Size returns the number of items in the allow, block, suffix sets.
-func (s *Sets) Size() (int, int, int) {
+func (s *Sets) Size() (int, int, int, int) {
 	allow := s.allow.Size()
+	allowsuffix := s.allowsuffix.Size()
 	block := s.block.Size()
 	suffix := s.suffix.Size()
-	return allow, block, suffix
+	return allow, allowsuffix, block, suffix
 }
 
 // Allow indicates whether domain is on the explicit allow-list.
 func (s *Sets) Allow(domain string) bool {
 	return s.allow.Contains(domain)
+}
+
+func (s *Sets) AllowBySuffix(domain string) bool {
+	if s.allowsuffix.Size() == 0 {
+		return false
+	}
+
+	domain = strings.Trim(domain, ".")
+	if domain == "" {
+		return false
+	}
+
+	if s.allowsuffix.Contains(domain) {
+		return true
+	}
+
+	idx := strings.Index(domain, ".")
+	if idx <= 0 {
+		return false
+	}
+
+	return s.AllowBySuffix(domain[idx+1:])
 }
 
 // BlockByMatch indicates whether domain is on the explicit block-list.

@@ -8,7 +8,7 @@ import (
 	"github.com/coredns/coredns/plugin"
 	"github.com/coredns/coredns/request"
 	"github.com/miekg/dns"
-	"github.com/shoenig/donutdns/sources"
+	"github.com/neflyte/donutdns/sources"
 )
 
 const (
@@ -29,6 +29,11 @@ func (dd DonutDNS) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Ms
 
 	if dd.sets.Allow(cleanQuery) {
 		pluginLogger.Debugf("query for %s is explicitly allowed", cleanQuery)
+		return plugin.NextOrFailure(dd.Name(), dd.Next, ctx, w, r)
+	}
+
+	if dd.sets.AllowBySuffix(cleanQuery) {
+		pluginLogger.Debugf("query for %s is allowed by suffix", cleanQuery)
 		return plugin.NextOrFailure(dd.Name(), dd.Next, ctx, w, r)
 	}
 

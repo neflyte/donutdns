@@ -1,16 +1,19 @@
 package donutdns
 
 import (
+	"strconv"
+
 	"github.com/coredns/caddy"
 	"github.com/coredns/coredns/core/dnsserver"
 	"github.com/coredns/coredns/plugin"
 	"github.com/coredns/coredns/plugin/pkg/log"
 	"github.com/neflyte/donutdns/agent"
 	"github.com/neflyte/donutdns/sources"
-	"strconv"
 )
 
 var pluginLogger = log.NewWithPlugin(PluginName)
+
+func init() { plugin.Register(PluginName, Setup) }
 
 // Setup will parse plugin config and register the donutdns plugin
 // with the CoreDNS core server.

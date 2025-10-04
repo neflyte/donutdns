@@ -1,4 +1,4 @@
-package sources
+package donutdns
 
 import (
 	"context"
@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-cleanhttp"
-	"github.com/neflyte/donutdns/agent"
 )
 
 // client creates an http.Client with an explicit DNS server. This is necessary
@@ -21,7 +20,7 @@ import (
 // until it's actually ready. A project for a rainy day.
 //
 // Totally ripped from https://koraygocmen.medium.com/custom-dns-resolver-for-the-default-http-client-in-go-a1420db38a5d
-func client(fwd *agent.Forward) *http.Client {
+func client(fwd *Forward) *http.Client {
 	var (
 		dnsResolverIP        = "1.1.1.1:53" // Cloudflare DNS resolver.
 		dnsResolverProto     = "udp"        // Protocol to use for the DNS resolver

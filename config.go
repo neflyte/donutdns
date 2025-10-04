@@ -1,4 +1,4 @@
-package agent
+package donutdns
 
 import (
 	"bytes"
@@ -7,7 +7,6 @@ import (
 	"text/template"
 
 	"github.com/coredns/coredns/plugin/pkg/log"
-	"github.com/neflyte/donutdns/output"
 	"github.com/shoenig/extractors/env"
 )
 
@@ -112,7 +111,7 @@ func ConfigFromEnv(e env.Environment) *CoreConfig {
 }
 
 // Log cc to plog.
-func (cc *CoreConfig) Log(_ output.Info) {
+func (cc *CoreConfig) Log(_ Info) {
 	log.Infof("DONUT_DNS_PORT: %d", cc.Port)
 	log.Infof("DONUT_DNS_NO_DEBUG: %t", cc.NoDebug)
 	log.Infof("DONUT_DNS_NO_LOG: %t", cc.NoLog)

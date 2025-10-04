@@ -1,6 +1,8 @@
-package sources
+package donutdns
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/hashicorp/go-set"
@@ -51,7 +53,7 @@ func Test_customFile(t *testing.T) {
 
 	t.Run("example", func(t *testing.T) {
 		s := set.New[string](10)
-		customFile("../hack/example.txt", s)
+		customFile("hack/example.txt", s)
 		must.Size(t, 2, s)
 		must.Contains[string](t, "example.com", s)
 		must.Contains[string](t, "sub.example.com", s)
@@ -67,7 +69,11 @@ func Test_customDir(t *testing.T) {
 
 	t.Run("myblocks", func(t *testing.T) {
 		s := set.New[string](10)
-		customDir("../blocklists.d", s)
+		cwd, err := os.Getwd()
+		must.Nil(t, err)
+		blocklistDir := filepath.Join(cwd, "hack", "..", "blocklists.d")
+		t.Logf("+++ blocklistDir: %s", blocklistDir)
+		customDir(blocklistDir, s)
 		must.NotEmpty(t, s)
 		must.Contains[string](t, "fb.com", s)
 		must.Contains[string](t, "cnn.com", s)

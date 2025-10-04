@@ -1,6 +1,6 @@
 //go:build linux
 
-package agent
+package donutdns
 
 import (
 	"testing"
@@ -68,7 +68,7 @@ func Test_readable(t *testing.T) {
 func Test_Lockdown(t *testing.T) {
 	t.Run("ok", func(t *testing.T) {
 		err := Lockdown(&CoreConfig{
-			BlockFile: "../hack/example.txt",
+			BlockFile: "hack/example.txt",
 		})
 		must.NoError(t, err)
 	})

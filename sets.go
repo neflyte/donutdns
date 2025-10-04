@@ -1,4 +1,4 @@
-package sources
+package donutdns
 
 import (
 	"os"
@@ -6,9 +6,6 @@ import (
 	"strings"
 
 	"github.com/hashicorp/go-set"
-	"github.com/neflyte/donutdns/agent"
-	"github.com/neflyte/donutdns/output"
-	"github.com/neflyte/donutdns/sources/extract"
 	"github.com/shoenig/ignore"
 )
 
@@ -20,8 +17,8 @@ type Sets struct {
 	suffix      *set.Set[string]
 }
 
-// New returns a Sets pre-filled according to cc.
-func New(logger output.Logger, cc *agent.CoreConfig) *Sets {
+// NewSets returns a Sets pre-filled according to cc.
+func NewSets(logger Logger, cc *CoreConfig) *Sets {
 	allow := set.New[string](100)
 	allowsuffix := set.New[string](100)
 	block := set.New[string](100)
@@ -140,7 +137,7 @@ func (s *Sets) BlockBySuffix(domain string) bool {
 	return s.BlockBySuffix(domain[idx+1:])
 }
 
-func defaults(fwd *agent.Forward, set *set.Set[string], logger output.Logger) {
+func defaults(fwd *Forward, set *set.Set[string], logger Logger) {
 	d := NewDownloader(fwd, logger)
 	s, err := d.Download(Defaults())
 	if err != nil {
@@ -155,7 +152,7 @@ func customFile(filename string, set *set.Set[string]) {
 	}
 
 	// for now, everything uses the generic domain extractor
-	ex := extract.New(extract.Generic)
+	ex := NewExtractor(Generic)
 	f, err := os.Open(filename)
 	if err != nil {
 		panic(err)

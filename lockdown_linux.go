@@ -1,6 +1,6 @@
 //go:build linux
 
-package agent
+package donutdns
 
 import (
 	"github.com/shoenig/go-landlock"

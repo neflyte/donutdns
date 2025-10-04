@@ -1,4 +1,4 @@
-package sources
+package donutdns
 
 import (
 	"fmt"
@@ -6,9 +6,6 @@ import (
 	"runtime"
 
 	"github.com/hashicorp/go-set"
-	"github.com/neflyte/donutdns/agent"
-	"github.com/neflyte/donutdns/output"
-	"github.com/neflyte/donutdns/sources/extract"
 	"github.com/shoenig/ignore"
 )
 
@@ -19,12 +16,12 @@ type Downloader interface {
 }
 
 type downloader struct {
-	logger  output.Logger
-	forward *agent.Forward
+	logger  Logger
+	forward *Forward
 }
 
 // NewDownloader creates a new Downloader for downloading source lists.
-func NewDownloader(fwd *agent.Forward, logger output.Logger) Downloader {
+func NewDownloader(fwd *Forward, logger Logger) Downloader {
 	return &downloader{
 		forward: fwd,
 		logger:  logger,
@@ -32,7 +29,7 @@ func NewDownloader(fwd *agent.Forward, logger output.Logger) Downloader {
 }
 
 func (d *downloader) Download(lists *Lists) (*set.Set[string], error) {
-	g := NewGetter(d.logger, d.forward, extract.New(extract.Generic))
+	g := NewGetter(d.logger, d.forward, NewExtractor(Generic))
 	combo := set.New[string](100)
 	for _, source := range lists.All() {
 		single, err := g.Get(source)
@@ -53,12 +50,12 @@ type Getter interface {
 
 type getter struct {
 	client *http.Client
-	ex     extract.Extractor
-	logger output.Logger
+	ex     Extractor
+	logger Logger
 }
 
 // NewGetter creates a new Getter, using Extractor ex to extract domains.
-func NewGetter(logger output.Logger, fwd *agent.Forward, ex extract.Extractor) Getter {
+func NewGetter(logger Logger, fwd *Forward, ex Extractor) Getter {
 	return &getter{
 		client: client(fwd),
 		ex:     ex,

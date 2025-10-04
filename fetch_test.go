@@ -1,4 +1,4 @@
-package sources
+package donutdns
 
 import (
 	"fmt"
@@ -7,8 +7,6 @@ import (
 	"testing"
 
 	"github.com/coredns/coredns/plugin/pkg/log"
-	"github.com/neflyte/donutdns/agent"
-	"github.com/neflyte/donutdns/sources/extract"
 	"github.com/shoenig/test/must"
 )
 
@@ -26,8 +24,8 @@ func Test_Get(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	ex := extract.New(extract.Generic)
-	fwd := new(agent.Forward)
+	ex := NewExtractor(Generic)
+	fwd := new(Forward)
 
 	g := NewGetter(pLog, fwd, ex)
 	s, err := g.Get(ts.URL)
@@ -36,8 +34,8 @@ func Test_Get(t *testing.T) {
 }
 
 func Test_Get_bad_upstream(t *testing.T) {
-	ex := extract.New(extract.Generic)
-	fwd := &agent.Forward{Addresses: []string{"0.0.0.0"}}
+	ex := NewExtractor(Generic)
+	fwd := &Forward{Addresses: []string{"0.0.0.0"}}
 
 	g := NewGetter(pLog, fwd, ex)
 	_, err := g.Get("http://example.com")
@@ -60,7 +58,7 @@ func Test_Download(t *testing.T) {
 		Miners:      []string{ts.URL},
 	}
 
-	fwd := new(agent.Forward)
+	fwd := new(Forward)
 	d := NewDownloader(fwd, pLog)
 
 	s, err := d.Download(lists)

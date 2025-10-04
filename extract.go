@@ -1,4 +1,4 @@
-package extract
+package donutdns
 
 import (
 	"bufio"
@@ -25,8 +25,8 @@ type extractor struct {
 	re *regexp.Regexp
 }
 
-// New creates a new Extractor, using regular expression re to match domains.
-func New(re string) Extractor {
+// NewExtractor creates a new Extractor, using regular expression re to match domains.
+func NewExtractor(re string) Extractor {
 	return &extractor{
 		re: regexp.MustCompile(re),
 	}

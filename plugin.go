@@ -8,7 +8,6 @@ import (
 	"github.com/coredns/coredns/plugin"
 	"github.com/coredns/coredns/request"
 	"github.com/miekg/dns"
-	"github.com/neflyte/donutdns/sources"
 )
 
 const (
@@ -18,7 +17,7 @@ const (
 
 type DonutDNS struct {
 	Next plugin.Handler
-	sets *sources.Sets
+	sets *Sets
 }
 
 func (dd DonutDNS) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {

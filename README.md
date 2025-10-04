@@ -30,7 +30,7 @@ with little to no configuration.
 
 ## Domain Block/Allow Lists
 
-The default set of blocked domains are retrieved from the source lists in [sources.json](sources/statics/sources.json).
+The default set of blocked domains are retrieved from the source lists in [sources.json](statics/sources.json).
 These lists are compiled and maintained by volunteers; see their respective headers
 for more information about terms of use and other metadata. Thank you to those who
 contribute to these domain block lists.

@@ -7,8 +7,6 @@ import (
 	"github.com/coredns/coredns/core/dnsserver"
 	"github.com/coredns/coredns/plugin"
 	"github.com/coredns/coredns/plugin/pkg/log"
-	"github.com/neflyte/donutdns/agent"
-	"github.com/neflyte/donutdns/sources"
 )
 
 var pluginLogger = log.NewWithPlugin(PluginName)
@@ -21,8 +19,8 @@ func init() { plugin.Register(PluginName, Setup) }
 // todo: test with TestController
 func Setup(c *caddy.Controller) error {
 	// reconstruct the parts of CoreConfig for initializing the allow/block lists
-	cc := new(agent.CoreConfig)
-	cc.Forward = new(agent.Forward)
+	cc := new(CoreConfig)
+	cc.Forward = new(Forward)
 
 	for c.Next() {
 		_ = c.RemainingArgs()
@@ -133,7 +131,7 @@ func Setup(c *caddy.Controller) error {
 		}
 	}
 
-	sets := sources.New(pluginLogger, cc)
+	sets := NewSets(pluginLogger, cc)
 	allow, allowsuffix, block, suffix := sets.Size()
 	pluginLogger.Infof("domains on explicit allow-list(s): %d", allow)
 	pluginLogger.Infof("domains on suffixes allow-list(s): %d", allowsuffix)

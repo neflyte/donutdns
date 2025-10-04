@@ -1,4 +1,4 @@
-package sources
+package donutdns
 
 import (
 	_ "embed"

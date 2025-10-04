@@ -1,4 +1,4 @@
-package subcmds
+package donutdns
 
 import (
 	"context"
@@ -6,9 +6,6 @@ import (
 	"strings"
 
 	"github.com/google/subcommands"
-	"github.com/neflyte/donutdns/agent"
-	"github.com/neflyte/donutdns/output"
-	"github.com/neflyte/donutdns/sources"
 	"github.com/shoenig/extractors/env"
 )
 
@@ -45,7 +42,7 @@ func (cc *CheckCmd) SetFlags(fs *flag.FlagSet) {
 }
 
 func (cc *CheckCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...any) subcommands.ExitStatus {
-	logger := new(output.CLI)
+	logger := new(CLI)
 
 	args := f.Args()
 	if len(args) == 0 {
@@ -60,16 +57,16 @@ func (cc *CheckCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...any) subcom
 	return subcommands.ExitSuccess
 }
 
-func (cc *CheckCmd) execute(output *output.CLI, domain string) error {
-	cfg := agent.ConfigFromEnv(env.OS)
-	agent.ApplyDefaults(cfg)
+func (cc *CheckCmd) execute(output *CLI, domain string) error {
+	cfg := ConfigFromEnv(env.OS)
+	ApplyDefaults(cfg)
 	cfg.NoDefaults = !cc.defaults
 
 	if !cc.quiet {
 		cfg.Log(output)
 	}
 
-	sets := sources.New(output, cfg)
+	sets := NewSets(output, cfg)
 	switch {
 	case sets.Allow(domain):
 		output.Infof("domain %q on explicit allow list", domain)

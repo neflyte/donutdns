@@ -1,4 +1,4 @@
-package extract
+package donutdns
 
 import (
 	"bytes"
@@ -36,7 +36,7 @@ func TestExtractor_Extract(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.file, func(t *testing.T) {
-			ex := New(tc.mode)
+			ex := NewExtractor(tc.mode)
 			result, err := ex.Extract(openSample(t, tc.file))
 			must.NoError(t, err)
 			must.Eq(t, tc.exp, result.Size(), must.Sprintf("result: %v", result))

@@ -25,6 +25,7 @@ func (dd DonutDNS) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Ms
 
 	origQuery := state.Name()
 	cleanQuery := strings.Trim(origQuery, ".")
+	pluginLogger.Debugf("origQuery=%s, cleanQuery=%s", origQuery, cleanQuery)
 
 	if dd.sets.Allow(cleanQuery) {
 		pluginLogger.Debugf("query for %s is explicitly allowed", cleanQuery)

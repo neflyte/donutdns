@@ -141,10 +141,11 @@ func Setup(c *caddy.Controller) error {
 	pluginLogger.Infof("forward name: %s", cc.Forward.ServerName)
 
 	// Add the Plugin to CoreDNS, so Servers can use it in their plugin chain.
-	dd := DonutDNS{sets: sets}
+	// dd: = DonutDNS{sets: sets}
 	dnsserver.GetConfig(c).AddPlugin(func(next plugin.Handler) plugin.Handler {
-		dd.Next = next
-		return dd
+		//dd.Next = next
+		//return dd
+		return DonutDNS{sets: sets, Next: next}
 	})
 
 	// Plugin loaded okay.
